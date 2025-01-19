@@ -1,0 +1,32 @@
+# JSON dosyaları
+A1.json
+A2.json
+B1.json
+B2.json
+
+# Firebase
+GoogleService-Info.plist
+
+# Build files
+build/
+DerivedData/
+
+# Xcode
+*.xcuserdatad
+*.xcuserdata
+*.xcworkspace
+
+# CocoaPods
+Pods/
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# Temp ve cache dosyaları
+*.swp
+*.swo
+*~
+*.log
+*.tmp
+.DS_Store
