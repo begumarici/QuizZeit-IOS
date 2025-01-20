@@ -20,7 +20,7 @@ class CategoryViewController: UIViewController {
     
     
     @IBAction func vocabularyButtonTapped(_ sender: UIButton) {
-        performSegue(withIdentifier: "vocabularySegue", sender: self)
+
         }
     
     
