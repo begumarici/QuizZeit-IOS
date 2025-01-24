@@ -7,32 +7,57 @@
 
 import UIKit
 import FirebaseCore
+import GoogleSignIn
+import FirebaseAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         FirebaseApp.configure()
+
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            fatalError("Google Sign-In Client ID not found. Please check your Firebase configuration.")
+        }
+        
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        
+        determineInitialViewController()
+
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
+    // MARK: - User Session Check
+    private func determineInitialViewController() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        // check if the user is signed in
+        if Auth.auth().currentUser != nil {
+            // if there is a signed-in user, navigate to profile screen
+            let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController")
+            window?.rootViewController = profileVC
+        } else {
+            // if the user is not signed in, show to sign in screen
+            let loginVC = storyboard.instantiateViewController(withIdentifier: "SignInViewController")
+            window?.rootViewController = loginVC
+        }
+        
+        window?.makeKeyAndVisible()
+    }
 
+    // MARK: - Google Sign-In URL Handler
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+
+    // MARK: - UISceneSession Lifecycle
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+
     }
-
-
 }
-

@@ -94,9 +94,8 @@ class QuizViewController: UIViewController {
         if let path = Bundle.main.path(forResource: "B1", ofType: "json"),
            let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             do {
-                // JSON'ı sözlük olarak parse et
                 if let rawWords = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
-                    words = Array(rawWords.keys) // Tüm kelimeleri anahtarlar olarak al
+                    words = Array(rawWords.keys) 
                 }
             } catch {
                 print("Error decoding JSON: \(error)")
@@ -111,7 +110,6 @@ class QuizViewController: UIViewController {
     
     func displayQuestion() {
         guard currentQuestionIndex < questions.count else {
-            // Quiz bittiğinde sonuç ekranına geç
             performSegue(withIdentifier: "goToResults", sender: nil)
             return
         }
@@ -126,7 +124,7 @@ class QuizViewController: UIViewController {
                 button.isHidden = true
             }
         }
-        scoreLabel.text = "Score: \(score) / \(currentQuestionIndex)" // Skor formatını güncelle
+        scoreLabel.text = "Score: \(score) / \(currentQuestionIndex)"
     }
 
 
@@ -134,15 +132,11 @@ class QuizViewController: UIViewController {
         if segue.identifier == "goToResults" {
             let destinationVC = segue.destination as! ResultsViewController
             destinationVC.score = score
-            destinationVC.solvedQuestions = currentQuestionIndex // Çözülen soru sayısını gönder
-            destinationVC.userAnswers = userAnswers // Kullanıcı cevaplarını aktar
+            destinationVC.solvedQuestions = currentQuestionIndex
+            destinationVC.userAnswers = userAnswers
         }
     }
 
-
-
-    
-    // Kullanıcı bir butona tıkladığında çalışacak fonksiyon
     @IBAction func answerTapped(_ sender: UIButton) {
         guard currentQuestionIndex < questions.count else { return }
         let currentQuestion = questions[currentQuestionIndex]
@@ -150,45 +144,41 @@ class QuizViewController: UIViewController {
         let userAnswer = sender.title(for: .normal) ?? ""
         let correctAnswer = currentQuestion.answer
         
-        // Cevapları kaydet
         userAnswers.append((question: currentQuestion.question, userAnswer: userAnswer, correctAnswer: correctAnswer))
         
         if sender.title(for: .normal) == currentQuestion.answer {
-            sender.backgroundColor = UIColor(red: 143/255.0, green: 201/255.0, blue: 135/255.0, alpha: 1.0) // Özel yeşil
+            sender.backgroundColor = UIColor(red: 143/255.0, green: 201/255.0, blue: 135/255.0, alpha: 1.0)
             score += 1
             
-            // Doğru cevaplanan kelimeyi kalıcı olarak sakla
+            // store the correctly answered word
             QuizDataManager.shared.correctAnswers.append(Answer(word: currentQuestion.question, correctTranslation: currentQuestion.answer))
             print("Added to correctAnswers: \(currentQuestion.question) - \(currentQuestion.answer)")
         } else {
-            sender.backgroundColor = UIColor(red: 207/255.0, green: 128/255.0, blue: 128/255.0, alpha: 1.0) // Özel kırmızı
+            sender.backgroundColor = UIColor(red: 207/255.0, green: 128/255.0, blue: 128/255.0, alpha: 1.0)
             
-            // Yanlış cevaplanan kelimeyi kalıcı olarak sakla
+            // store the wrongly answered word
             QuizDataManager.shared.wrongAnswers.append(Answer(word: currentQuestion.question, correctTranslation: currentQuestion.answer))
             print("Added to wrongAnswers: \(currentQuestion.question) - \(currentQuestion.answer)")
             
-            // Doğru cevabı yeşil yap
             for button in answerButtons {
                 if button.title(for: .normal) == currentQuestion.answer {
-                    button.backgroundColor = UIColor(red: 143/255.0, green: 201/255.0, blue: 135/255.0, alpha: 1.0) // Özel yeşil
+                    button.backgroundColor = UIColor(red: 143/255.0, green: 201/255.0, blue: 135/255.0, alpha: 1.0)
                 }
             }
         }
         
-        // Tüm butonların tıklanmasını engelle
+        // block all the button interactions
         for button in answerButtons {
             button.isUserInteractionEnabled = false
         }
         
-        // 1 saniye sonra sonraki soruya geç
+        // go to the next question after 1 sec
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.currentQuestionIndex += 1
-            self.resetButtonState() // Butonları sıfırla
+            self.resetButtonState()
             self.displayQuestion()
         }
     }
-    
-    
     
     func resetButtonState() {
         for button in answerButtons {
@@ -197,22 +187,12 @@ class QuizViewController: UIViewController {
         }
     }
     
-    
-    
     @IBAction func endQuizTapped(_ sender: UIBarButtonItem) {
-        // UIAlertController oluştur
           let alert = UIAlertController(title: "Quit Quiz", message: "Are you sure you want to quit the quiz?", preferredStyle: .alert)
-          
-          // "Yes" seçeneği
           alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { _ in
-              // Quiz'i sonlandır ve sonuç ekranına geç
               self.performSegue(withIdentifier: "goToResults", sender: nil)
           }))
-          
-          // "No" seçeneği
           alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-          
-          // Uyarıyı göster
           present(alert, animated: true, completion: nil)
     }
 

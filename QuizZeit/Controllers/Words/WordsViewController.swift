@@ -1,3 +1,10 @@
+//
+//  WordsViewController.swift
+//  QuizZeit
+//
+//  Created by Begüm Arıcı on 23.01.2025.
+//
+
 import UIKit
 
 class WordsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating {
