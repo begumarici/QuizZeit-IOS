@@ -16,9 +16,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         window = UIWindow(windowScene: windowScene)
-
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
+        let splashVC = storyboard.instantiateViewController(withIdentifier: "SplashViewController") as! SplashViewController
+
+        window?.rootViewController = splashVC
+        window?.makeKeyAndVisible()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.navigateToMainScreen(storyboard: storyboard)
+        }
+    }
+
+    private func navigateToMainScreen(storyboard: UIStoryboard) {
         let tabBarController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
 
         if Auth.auth().currentUser != nil {
@@ -27,10 +37,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 navigationController.setViewControllers([profileVC], animated: false)
             }
         }
-
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
+
 
     func sceneDidDisconnect(_ scene: UIScene) {
     }

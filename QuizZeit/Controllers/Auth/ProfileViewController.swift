@@ -14,6 +14,7 @@ class ProfileViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var signOffButton: UIButton!
+    @IBOutlet weak var resetDataButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,6 +61,29 @@ class ProfileViewController: UIViewController {
             showAlert(title: "Error", message: "Failed to sign out. Please try again.")
         }
     }
+    
+    @IBAction func resetDataTapped(_ sender: UIButton) {
+        let alert = UIAlertController(
+            title: "Reset Data",
+            message: "Your all correct and wrong answers will be reset. Do you want to continue?",
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { _ in
+            QuizDataManager.shared.resetData()
+            self.showSuccessAlert()
+        }))
+        present(alert, animated:true, completion: nil)
+    }
+    
+    private func showSuccessAlert() {
+        let successAlert = UIAlertController(
+            title: "Success", message: "Your data has been succesfully reset.", preferredStyle: .alert
+        )
+        successAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(successAlert, animated: true, completion: nil)
+    }
+    
+    
 
     // MARK: - Navigation
     private func switchToAccount() {
